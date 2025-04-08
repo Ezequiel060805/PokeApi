@@ -3,73 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APP APIs</title>
+    <title>Pokémon API</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .pokemon-image {
-            position: fixed;
-            left: 64rem;
-            top: 50%;
-            transform: translateY(-50%);
-            max-width: 400px;
-            z-index: 10;
-            animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float {
-            0% { transform: translateY(-50%) translateY(0px); }
-            50% { transform: translateY(-50%) translateY(-20px); }
-            100% { transform: translateY(-50%) translateY(0px); }
-        }
-    </style>
 </head>
-<body class="bg-gray-900 text-white flex">
-    <nav class="menu-lateral bg-gray-800 w-64 min-h-screen p-4 fixed">
-        <h2 class="text-2xl font-bold mb-6 text-yellow-400 border-b-2 border-yellow-400 pb-2">Menú</h2>
-        <a href="main.html" class="boton block bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg mb-4 text-center transition duration-200 transform hover:scale-105">
-            Pokedex
-        </a>
-    </nav>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
+    <h1 class="text-4xl font-bold mb-6">Busca tu Pokémon</h1>
+    <input id="pokemonInput" type="text" placeholder="Nombre del Pokémon" class="p-2 rounded text-black">
+    <button onclick="fetchPokemon()" class="bg-blue-500 px-4 py-2 mt-4 rounded hover:bg-blue-700">Buscar</button>
+    
+    <div id="pokemonInfo" class="mt-6 p-4 bg-gray-800 rounded-lg text-center hidden">
+        <h2 id="pokemonName" class="text-2xl font-bold"></h2>
+        <img id="pokemonImage" class="mx-auto my-4 w-32 h-32">
+        <p id="pokemonType" class="text-lg"></p>
+    </div>
 
-    <main class="ml-64 p-8 w-full relative">
-        <div class="max-w-3xl mx-auto bg-gray-800 p-8 rounded-lg shadow-lg relative z-20">
-            <h1 class="text-4xl font-bold mb-6 text-yellow-400 text-center">BIENVENIDO A LA APP APIS!!</h1>
+    <script>
+        async function fetchPokemon() {
+            const name = document.getElementById('pokemonInput').value.toLowerCase();
+            const response = await fetch(`/pokemon/${name}`);
+            const data = await response.json();
             
-            <div class="bg-gray-700 p-6 rounded-lg mb-6">
-                <p class="text-lg mb-4">
-                    Desde la barra lateral podrás utilizar distintas APIs que se estuvo viendo 
-                    <span class="font-bold text-yellow-300">desde el inicio del cuatrimestre hasta el momento.</span>
-                </p>
-                
-                <div class="bg-red-900/50 border-l-4 border-red-500 p-4">
-                    <h2 class="text-xl font-bold text-red-300">NOTA:</h2>
-                    <p class="text-red-200">Por el momento solo está habilitada la PokeApi</p>
-                </div>
-            </div>
+            if (response.status === 404) {
+                alert('Pokémon no encontrado');
+                return;
+            }
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-gray-700 p-4 rounded-lg">
-                    <h3 class="text-xl font-bold text-blue-400 mb-2">Próximas APIs</h3>
-                    <ul class="list-disc list-inside text-gray-300">
-                        <li class="mb-1">API de Clima</li>
-                        <li class="mb-1">API de Noticias</li>
-                        <li class="mb-1">API de Películas</li>
-                    </ul>
-                </div>
-                
-                <div class="bg-gray-700 p-4 rounded-lg">
-                    <h3 class="text-xl font-bold text-green-400 mb-2">Características</h3>
-                    <ul class="list-disc list-inside text-gray-300">
-                        <li class="mb-1">Interfaz intuitiva</li>
-                        <li class="mb-1">Diseño responsive</li>
-                        <li class="mb-1">Fácil de usar</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Imagen de Pokémon flotante -->
-        <img src="C:\Users\ezequ\OneDrive\Documentos\UT de San Luis Rio Colorado\Cuatrimestre 4\APPs web orientadas a servicios\Parcial 3\PokeApi\public\pokemon.jpg" alt="Pokémon" class="pokemon-image hidden md:block">
-    </main>
+            document.getElementById('pokemonName').textContent = data.name.toUpperCase();
+            document.getElementById('pokemonImage').src = data.sprites.front_default;
+            document.getElementById('pokemonType').textContent = 'Tipo: ' + data.types.map(t => t.type.name).join(', ');
+            document.getElementById('pokemonInfo').classList.remove('hidden');
+        }
+    </script>
 </body>
 </html>
