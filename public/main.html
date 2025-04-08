@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon API</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
+    <h1 class="text-4xl font-bold mb-6">Busca tu Pokémon</h1>
+    <input id="pokemonInput" type="text" placeholder="Nombre del Pokémon" class="p-2 rounded text-black">
+    <button onclick="fetchPokemon()" class="bg-blue-500 px-4 py-2 mt-4 rounded hover:bg-blue-700">Buscar</button>
+    
+    <div id="pokemonInfo" class="mt-6 p-4 bg-gray-800 rounded-lg text-center hidden">
+        <h2 id="pokemonName" class="text-2xl font-bold"></h2>
+        <img id="pokemonImage" class="mx-auto my-4 w-32 h-32">
+        <p id="pokemonType" class="text-lg"></p>
+    </div>
+
+    <script>
+        async function fetchPokemon() {
+            const name = document.getElementById('pokemonInput').value.toLowerCase();
+            const response = await fetch(`/pokemon/${name}`);
+            const data = await response.json();
+            
+            if (response.status === 404) {
+                alert('Pokémon no encontrado');
+                return;
+            }
+            
+            document.getElementById('pokemonName').textContent = data.name.toUpperCase();
+            document.getElementById('pokemonImage').src = data.sprites.front_default;
+            document.getElementById('pokemonType').textContent = 'Tipo: ' + data.types.map(t => t.type.name).join(', ');
+            document.getElementById('pokemonInfo').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
+
